@@ -6,6 +6,9 @@ var ctxMap;
 var pl;
 var ctxPl;
 
+var enemyCvs;
+var ctxEnemy;
+
 var drawBtn;
 var clearBtn;
 
@@ -36,11 +39,18 @@ function init()
 	pl = document.getElementById("player");
 	ctxPl = pl.getContext("2d");
 
+	enemyCvs = document.getElementById("enemy");
+	ctxEnemy = enemyCvs.getContext("2d");
+
+
 	map.width = gameWidth;
 	map.height = gameHeight;
 
 	pl.width = gameWidth;
 	pl.height = gameHeight;
+
+	enemyCvs.width = gameWidth;
+	enemyCvs.height = gameHeight;
 
 	drawBtn = document.getElementById("drawBtn");
 	clearBtn = document.getElementById("clearBtn");
@@ -88,6 +98,7 @@ function draw()
 function update()
 {
 	player.update();
+	enemy.update();
 }
 
 function Player()
@@ -110,17 +121,31 @@ function Enemy()
 {
 	this.srcX = 0;
 	this.srcY = 115;
-	this.drawX = 700;
-	this.drawY = 50;
+	
 	this.width = 170;
 	this.heigh = 115;
+
+	this.drawX = Math.floor(Math.random() * 10) + gameWidth;
+	this.drawY = Math.floor(Math.random() * (gameHeight - this.heigh));
+
 	this.speed = 8;
 }
 
 Enemy.prototype.draw = function()
 {
- 	ctxMap.drawImage(tiles, this.srcX, this.srcY, this.width, 
+	clearCtxEnemy();
+ 	ctxEnemy.drawImage(tiles, this.srcX, this.srcY, this.width, 
 	this.heigh, this.drawX, this.drawY, this.width/2, this.heigh/2);
+}
+
+Enemy.prototype.update = function()
+{
+	this.drawX -= 7;
+	if(this.drawX < 0)
+	{
+		this.drawX = Math.floor(Math.random() * 10) + gameWidth;
+		this.drawY = Math.floor(Math.random() * (gameHeight - this.heigh));		
+	}
 }
 
 Player.prototype.draw = function()
@@ -132,6 +157,11 @@ Player.prototype.draw = function()
 
 Player.prototype.update = function()
 {
+	if(this.drawX < 0) this.drawX = 0;
+ 	if(this.drawX > gameWidth - this.width - 100) this.drawX = gameWidth - this.width - 100;
+  	if(this.drawY < 0) this.drawY = 0;
+ 	if(this.drawY > gameHeight - this.heigh) this.drawY = gameHeight - this.heigh;
+
 	this.chooseDir();
 }
 
@@ -215,6 +245,11 @@ function clearRect()
 function clearCtxPlayer()
 {
 	ctxPl.clearRect(0, 0, gameWidth, gameHeight);
+}
+
+function clearCtxEnemy()
+{
+	ctxEnemy.clearRect(0, 0, gameWidth, gameHeight);
 }
 
 function drawBg()
